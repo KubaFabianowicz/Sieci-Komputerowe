@@ -1,0 +1,124 @@
+Plik z odpowiedziami:
+
+    1.Adres MAC i IP serwera oraz numer portu TCP, do którego łączy się klient:
+    ADRES MAC: 52:34:7f:f0:12:d0
+    Dst Port: 7373
+    Dst: 10.0.1.3
+
+    2.Treść wszystkich danych przesyłanych od klienta do serwera (tcp.pcap) w formacie ASCII:
+   8b2c2652b46b20cf0b984439ec3e54a6543a2cb3
+x
+Y100
+Q0
+M0
+Z0
+T87500
+A0
+F-1
+W0
+D0
+G01
+A3
+G11
+F0
+W55000
+Z1
+X
+
+
+    3.Zawartość najdłuższego pakietu przesłanego z serwera do klienta (HEX + ASCII dump):
+0000   7a 9b 67 94 85 b5 52 34 7f f0 12 d0 08 00 45 00   z.g...R4......E.
+0010   00 77 94 68 40 00 40 06 91 0c 0a 00 01 03 0a 00   .w.h@.@.........
+0020   00 0a 1c cd b8 c4 71 b1 ae 40 bf 9c b3 9f 80 18   ......q..@......
+0030   01 fe 93 92 00 00 01 01 08 0a dd 15 f5 34 29 2f   .............4)/
+0040   10 fa 4d 30 0a 54 36 34 30 30 30 2c 31 30 0a 5a   ..M0.T64000,10.Z
+0050   30 0a 53 6d 2d 30 2e 37 35 2c 39 35 2c 2d 31 0a   0.Sm-0.75,95,-1.
+0060   54 38 37 35 30 30 2c 31 30 0a 41 30 0a 57 30 0a   T87500,10.A0.W0.
+0070   44 30 0a 47 30 31 0a 53 6d 32 2e 38 32 2c 31 30   D0.G01.Sm2.82,10
+0080   30 2c 2d 31 0a                                    0,-1.
+
+
+    4.Filtr na wszystkie ramki (frame), które zawierają w sobie string “ok” (case insensitive):
+
+ frame matches "(?i)ok"  
+
+
+    5.Filtr na pakiet IP z adresu źródłowego 10.0.1.3 i długości payloadu TCP o wartości 13:
+    ip.src == 10.0.1.3 and tcp.len == 13  
+
+------------------------------------------------------------------------------
+    6.Filtr na pakiety ARP Reply lub Ping Reply:
+    arp.opcode == 2 or icmp.type == 0
+
+    7.Payload protokołu DNS (bez niższych warstw) z zapytaniem kosmatka.pl w postaci zdekodowanego drzewa:
+    dns.qry.name == "kosmatka.pl"
+Domain Name System (query)
+    Transaction ID: 0x3426
+    Flags: 0x0100 Standard query
+        0... .... .... .... = Response: Message is a query
+        .000 0... .... .... = Opcode: Standard query (0)
+        .... ..0. .... .... = Truncated: Message is not truncated
+        .... ...1 .... .... = Recursion desired: Do query recursively
+        .... .... .0.. .... = Z: reserved (0)
+        .... .... ...0 .... = Non-authenticated data: Unacceptable
+    Questions: 1
+    Answer RRs: 0
+    Authority RRs: 0
+    Additional RRs: 1
+    Queries
+        kosmatka.pl: type A, class IN
+            Name: kosmatka.pl
+            [Name Length: 11]
+            [Label Count: 2]
+            Type: A (1) (Host Address)
+            Class: IN (0x0001)
+    Additional records
+        <Root>: type OPT
+            Name: <Root>
+            Type: OPT (41) 
+            UDP payload size: 1472
+            Higher bits in extended RCODE: 0x00
+            EDNS0 version: 0
+            Z: 0x0000
+                0... .... .... .... = DO bit: Cannot handle DNSSEC security RRs
+                .000 0000 0000 0000 = Reserved: 0x0000
+            Data length: 0
+    [Response In: 2018]
+
+    8.Zapytanie HTTP do serwera http://mm.kosmatka.pl/ oraz odpowiedź (tylko nagłówki) w formacie ASCII:
+    GET / HTTP/1.1
+Host: mm.kosmatka.pl
+User-Agent: Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:136.0) Gecko/20100101 Firefox/136.0
+Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8
+Accept-Language: pl,en-US;q=0.7,en;q=0.3
+Accept-Encoding: gzip, deflate
+Connection: keep-alive
+Upgrade-Insecure-Requests: 1
+Priority: u=0, i
+
+HTTP/1.1 200 OK
+Server: nginx
+Date: Thu, 03 Apr 2025 14:22:09 GMT
+Content-Type: text/html; charset=UTF-8
+Transfer-Encoding: chunked
+Connection: keep-alive
+Vary: Accept-Encoding
+X-Powered-By: PHP/8.3.15
+Content-Encoding: gzip
+
+    9.Sposób zapisu obrazka http://mm.kosmatka.pl/favicon.png z Wireshark oraz jego treść w formacie base64:
+http.request.uri contains "favicong.png"
+prawy -> http stream
+znajdz linijke PNG -> prawy kopiuj as Base64 String
+
+4CP/zvcPzJblEhk2CABFAAHvlxRAAEAGQx3AqDBU2RyUvqskAFAXL2Rj5ZznpYAYAfVguQAAAQEICtNGrG0raocLR0VUIC9mYXZpY29uLnBuZyBIVFRQLzEuMQ0KSG9zdDogbW0ua29zbWF0a2EucGwNClVzZXItQWdlbnQ6IE1vemlsbGEvNS4wIChYMTE7IFVidW50dTsgTGludXggeDg2XzY0OyBydjoxMzYuMCkgR2Vja28vMjAxMDAxMDEgRmlyZWZveC8xMzYuMA0KQWNjZXB0OiB0ZXh0L2h0bWwsYXBwbGljYXRpb24veGh0bWwreG1sLGFwcGxpY2F0aW9uL3htbDtxPTAuOSwqLyo7cT0wLjgNCkFjY2VwdC1MYW5ndWFnZTogcGwsZW4tVVM7cT0wLjcsZW47cT0wLjMNCkFjY2VwdC1FbmNvZGluZzogZ3ppcCwgZGVmbGF0ZQ0KQ29ubmVjdGlvbjoga2VlcC1hbGl2ZQ0KVXBncmFkZS1JbnNlY3VyZS1SZXF1ZXN0czogMQ0KSWYtTW9kaWZpZWQtU2luY2U6IE1vbiwgMDYgQXByIDIwMTUgMDA6Mjg6MTQgR01UDQpJZi1Ob25lLU1hdGNoOiAiNTUyMWQzMWUtMjFjIg0KUHJpb3JpdHk6IHU9MCwgaQ0KDQo=
+
+Aby sprawdzić, czy obrazek jest poprawny, wklej go do adresu w przeglądarce (Firefox), doklejając na początku: data:image/png;base64,
+
+    10.Polecenie tcpdump do nasłuchu pakietów na interfejsie karty sieciowej wraz z zapisem do pliku output.pcap:
+    sudo tcpdump -i enp0s31f6 -w output.pcap
+    
+    tcpdump lsitening on enp0s31f6, link-type EN10MB (ethernet)
+
+
+
